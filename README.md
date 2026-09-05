@@ -2,656 +2,350 @@ TRACK_ID=PS05
 
 # LeaseGuard AI
 
-## Evidence-First Lease Agreement Review Assistant
+Evidence-First Lease Agreement Review Assistant
 
-LeaseGuard AI is an AI-assisted lease agreement review system designed to help legal and property management teams review lease agreements against predefined company standards.
+## Problem
 
-Instead of only summarizing a lease, LeaseGuard AI identifies compliant clauses, deviations, and missing protections while providing the exact evidence behind every finding.
+Lease agreements contain important financial, operational, and legal terms. Manual review can be slow and inconsistent, especially when agreements contain unusual clauses, missing protections, or terms outside company policy.
 
-The system combines deterministic policy rules with Gemini AI explanations while keeping the final decision with a human reviewer.
+LeaseGuard AI helps a human reviewer identify these issues quickly.
 
----
+## Solution
 
-# Problem
-
-Property management companies review many lease agreements containing important terms such as:
-
-- Security deposits
-- Notice periods
-- Maintenance responsibilities
-- Deposit return timelines
-- Rent increases
-- Subletting
-- Late fees
-- Early termination
-- Tenant and landlord information
-
-Manual review can be time-consuming and important deviations or missing protections may be overlooked.
-
-LeaseGuard AI helps make this review process faster, more consistent, and evidence-driven.
-
----
-
-# Solution
-
-LeaseGuard AI follows an evidence-first review workflow.
+LeaseGuard AI reviews a lease agreement against predefined company standards.
 
 The system:
 
-1. Accepts a lease agreement as PDF or text.
-2. Extracts readable text from the document.
-3. Checks the agreement against configurable company standards.
-4. Identifies compliant clauses.
-5. Detects deviations from company standards.
-6. Detects missing required protections.
-7. Shows the exact lease evidence supporting each finding.
-8. Assigns severity to findings.
-9. Generates a severity-based risk indicator.
-10. Uses Gemini to explain deterministic findings in plain language.
-11. Provides recommended actions for the human reviewer.
-12. Keeps the final decision with the human reviewer.
+1. Extracts the lease text.
+2. Checks important clauses using a deterministic Rule Engine.
+3. Identifies compliant clauses.
+4. Detects deviations from company standards.
+5. Detects missing required protections.
+6. Shows the exact lease evidence for every finding.
+7. Uses Gemini to explain the findings in plain language.
+8. Assigns severity and an internal risk indicator.
+9. Gives the human reviewer a recommended action.
+10. Keeps the human reviewer as the final decision maker.
 
----
+## Core Architecture
 
-# Core Design Principle
+Lease PDF or Text
 
-> The Rule Engine determines the finding, Gemini explains it, and the human reviewer makes the final decision.
+↓
 
----
+Text Parser
 
-# Core Architecture
+↓
 
-```text
-                  LEASE AGREEMENT
-                         |
-                         v
-                  PDF / TEXT INPUT
-                         |
-                         v
-                    PDF PARSER
-                         |
-                         v
-               DETERMINISTIC RULE
-                     ENGINE
-                         |
-          +--------------+--------------+
-          |              |              |
-          v              v              v
-       Evidence       Findings       Severity
-          |              |              |
-          +--------------+--------------+
-                         |
-                         v
-                    GEMINI AI
-                EXPLANATION LAYER
-                         |
-                         v
-                 REVIEWER GUIDANCE
-                         |
-                         v
-                  HUMAN REVIEWER
-````
+Clause and Evidence Extraction
 
----
+↓
 
-# Features
+Company Standards
 
-## 1. Lease Document Upload
+↓
 
-Users can upload a lease agreement in PDF format.
+Deterministic Rule Engine
 
-The system extracts readable text from the uploaded document and sends it through the review pipeline.
+↓
 
-The application also supports direct lease-text input for testing and demonstration.
+Gemini Explanation Layer
 
----
+↓
 
-## 2. Deterministic Rule Engine
+Risk and Severity Assessment
 
-LeaseGuard AI uses a deterministic Rule Engine to compare lease clauses against company standards.
+↓
 
-The Rule Engine handles policy checks such as:
+Human Review Report
 
-* Security deposit limits
-* Notice period limits
-* Deposit return timeline
-* Rent increase limits
-* Maintenance responsibility
-* Subletting requirements
-* Late fee limits
-* Early termination requirements
-* Landlord identification
-* Tenant identification
-* Lease duration
+## Key Features
 
-This makes policy evaluation predictable and reproducible.
+### PDF and Text Input
 
----
+Users can upload a PDF lease agreement or paste the agreement text directly.
 
-## 3. Compliance Detection
+### Deterministic Rule Engine
 
-The system identifies clauses that match the configured company standards.
+Important compliance decisions are made using Python rules instead of allowing the language model to decide whether a clause passes or fails.
 
-Example:
+### Compliance Detection
 
-```text
-Company Standard:
-Security deposit between 1 and 3 months.
+The system identifies clauses that match company standards.
 
-Lease:
-Security deposit = 2 months.
+### Deviation Detection
 
-Result:
-COMPLIANT
-```
+The system identifies clauses that differ from company standards.
 
----
+### Missing Protection Detection
 
-## 4. Deviation Detection
+The system also checks whether required protections are completely absent from the agreement.
 
-LeaseGuard identifies clauses that do not match the configured company standards.
+### Evidence-First Findings
 
-Example:
+Every finding contains the relevant lease evidence.
 
-```text
-Lease:
-Security deposit = 6 months.
+The reviewer can see:
 
-Company Standard:
-Security deposit should be between 1 and 3 months.
+- Lease evidence
+- Company standard
+- Deterministic rule
+- Finding status
+- Severity
+- Risk points
+- Gemini explanation
+- Recommended reviewer action
 
-Result:
-DEVIATION
-```
+### Risk and Severity
 
-The reviewer can see both the lease evidence and the expected company position.
+Findings are classified as:
 
----
+- Critical
+- High
+- Medium
+- Low
 
-## 5. Missing Protection Detection
+The system also calculates an internal risk indicator based on the severity of findings.
 
-The system also checks whether required protections are missing from the agreement.
+This is not a legal risk score.
 
-Example:
+### Gemini Explanation
 
-```text
-Required Protection:
-Deposit return timeline.
+Gemini is used as an explanation layer.
 
-Lease:
-No deposit return timeline found.
+The Rule Engine determines the finding.
 
-Result:
-MISSING
-```
+Gemini explains the finding.
 
-This ensures that the system does not only search for problematic clauses but also identifies important protections that are absent.
+The human reviewer makes the final decision.
 
----
+### Human-in-the-Loop
 
-## 6. Evidence-First Findings
+LeaseGuard AI does not approve or reject agreements automatically.
 
-Every finding is connected to evidence from the lease agreement.
-
-Each finding can contain:
-
-* Lease evidence
-* Company standard
-* Deterministic rule
-* Finding status
-* Severity
-* Risk points
-* Gemini explanation
-* Reviewer action
-
-This allows the reviewer to trace the result back to the agreement.
-
----
-
-## 7. Severity Classification
-
-Findings are classified according to their policy importance.
-
-The system supports:
-
-* CRITICAL
-* HIGH
-* MEDIUM
-* LOW
-
-This helps reviewers prioritize the most important findings first.
-
----
-
-## 8. Risk Indicator
-
-LeaseGuard provides an internal severity-based risk indicator.
-
-The dashboard displays:
-
-* Overall risk score
-* Risk level
-* Severity distribution
-* Total findings
-* Critical findings
-* High findings
-* Medium findings
-* Low findings
-
-The risk indicator is intended for review prioritization.
-
-It is not a legal validity score or a prediction of legal outcomes.
-
----
-
-## 9. Gemini AI Explanation
-
-Gemini acts as an explanation layer on top of the deterministic Rule Engine.
-
-Gemini provides:
-
-* Plain-language explanation
-* Practical risk context
-* Reviewer action
-* Confidence level
-
-Gemini does not determine the compliance status.
-
-The deterministic Rule Engine remains responsible for the actual policy evaluation.
-
----
-
-## 10. Human-in-the-Loop Review
-
-LeaseGuard AI does not automatically approve or reject a lease agreement.
-
-Instead, it provides evidence and explanations to assist the reviewer.
-
-The final decision remains with the human reviewer.
-
-```text
-AI assists the reviewer.
-Human review remains the final decision.
-```
-
----
-
-## 11. Graceful AI Failure Handling
-
-If Gemini becomes temporarily unavailable or its API quota is exhausted, the deterministic Rule Engine continues to operate.
-
-The reviewer can still access:
-
-* Policy findings
-* Lease evidence
-* Company standards
-* Severity
-* Risk assessment
-
-AI explanations are only displayed when they can be safely interpreted.
-
----
-
-# Company Standards
-
-The configured company standards are stored separately from the application logic.
-
-File:
-
-```text
-data/company_standards.json
-```
-
-Current example standards include:
-
-| Policy                  | Company Standard               |
-| ----------------------- | ------------------------------ |
-| Security Deposit        | 1–3 months of rent             |
-| Notice Period           | 30–60 days                     |
-| Deposit Return          | Within 30 days                 |
-| Rent Increase           | Maximum 5% annually            |
-| Maintenance             | Required responsibility clause |
-| Subletting              | Written approval required      |
-| Late Fee                | Maximum 5%                     |
-| Early Termination       | Required                       |
-| Landlord Identification | Required                       |
-| Tenant Identification   | Required                       |
-| Lease Duration          | Required                       |
-
-These values are configurable and can be replaced with organization-approved standards.
-
----
-
-# Technology Stack
-
-## Backend
-
-* Python
-* Python HTTP Server
-* pypdf
-
-## AI
-
-* Google Gemini API
-* Gemini model for natural-language explanations
-
-## Frontend
-
-* HTML
-* CSS
-* JavaScript
-
-The frontend is served directly by the Python application.
-
-No separate frontend server or build command is required.
-
----
-
-# Project Structure
-
-```text
-leaseguard-ai/
-│
-├── app.py
-├── requirements.txt
-├── README.md
-│
-├── src/
-│   ├── parser.py
-│   ├── rules.py
-│   ├── reviewer.py
-│   └── gemini_client.py
-│
-├── frontend/
-│   ├── index.html
-│   ├── style.css
-│   └── app.js
-│
-└── data/
-    ├── company_standards.json
-    └── sample_leases/
-        ├── clean_lease.txt
-        └── difficult_lease.txt
-```
-
----
-
-# Generated Data and Documents
-
-No external dataset is required for the prototype.
-
-LeaseGuard AI uses its own generated company standards and sample lease documents.
+It assists the reviewer by identifying issues and providing evidence.
 
 ## Company Standards
 
-```text
+The current demo company policy contains the following example standards:
+
+| Clause | Company Standard |
+| --- | --- |
+| Security Deposit | 1 to 3 months rent |
+| Notice Period | 30 to 60 days |
+| Deposit Return | Within 30 days |
+| Rent Increase | Maximum 5 percent annually |
+| Maintenance | Required responsibility clause |
+| Subletting | Written approval required |
+| Late Fee | Maximum 5 percent |
+| Early Termination | Required |
+| Landlord Identification | Required |
+| Tenant Identification | Required |
+| Lease Duration | Required |
+
+These standards are stored in:
+
 data/company_standards.json
-```
 
-Contains the policy positions used by the Rule Engine.
+## Technology Stack
 
-## Clean Lease
+Backend:
 
-```text
-data/sample_leases/clean_lease.txt
-```
+- Python
+- Python HTTP Server
+- pypdf
 
-A sample agreement designed to match the configured company standards.
+AI:
 
-## Difficult Lease
+- Google Gemini API
+- Gemini Flash
+- Gemini embeddings can be integrated for future retrieval improvements
 
-```text
+Frontend:
+
+- HTML
+- CSS
+- JavaScript
+
+Storage:
+
+- Local JSON data
+- Local sample lease documents
+
+## Project Structure
+
+leaseguard-ai/
+
+    app.py
+
+    requirements.txt
+
+    README.md
+
+    data/
+
+        company_standards.json
+
+        sample_leases/
+
+            clean_lease.txt
+
+            difficult_lease.txt
+
+    src/
+
+        parser.py
+
+        rules.py
+
+        reviewer.py
+
+        gemini_client.py
+
+    frontend/
+
+        index.html
+
+        style.css
+
+        app.js
+
+## Generated Data and Documents
+
+The repository includes generated demonstration data:
+
+- Company standards
+- Clean lease example
+- Difficult lease example
+
+These files allow the application to be tested immediately after installation.
+
+## Running the Project
+
+Requirements:
+
+- Python 3.11 or compatible Python version
+- Gemini API key
+
+Set the Gemini API key as an environment variable.
+
+Windows PowerShell:
+
+    $env:GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
+
+Install dependencies:
+
+    pip install -r requirements.txt
+
+Start the application:
+
+    python app.py
+
+Open:
+
+    http://localhost:8000
+
+## Demo Workflow
+
+1. Open LeaseGuard AI.
+2. Upload a lease PDF or paste lease text.
+3. Click Review Agreement.
+4. The Rule Engine evaluates the agreement.
+5. The dashboard displays compliant clauses, deviations, and missing protections.
+6. Review the evidence for each finding.
+7. Read Gemini's explanation.
+8. Follow the recommended reviewer action.
+9. Make the final decision as a human reviewer.
+
+The difficult demo lease is included in:
+
 data/sample_leases/difficult_lease.txt
-```
 
-A sample agreement containing multiple deviations and missing protections for demonstration.
+## Design Decisions
 
----
+### Why a Rule Engine?
 
-# How to Run
+Important policy decisions should be deterministic.
 
-## Requirements
+This reduces the chance of an AI model changing a compliance decision.
 
-Python 3.11 or a compatible Python environment.
+### Why Gemini?
 
-## Step 1: Install Dependencies
+Gemini provides natural-language explanations that make deterministic findings easier for reviewers to understand.
 
-From the repository root:
+### Why Evidence First?
 
-```bash
-pip install -r requirements.txt
-```
+Legal review requires traceability.
 
-## Step 2: Configure Gemini API Key
+Every finding should be connected to evidence from the agreement rather than being based on an unsupported AI statement.
 
-Set the Gemini API key using the `GEMINI_API_KEY` environment variable.
+### Why Human Review?
 
-### Windows PowerShell
+LeaseGuard AI is an assistant, not an autonomous legal decision maker.
 
-```powershell
-$env:GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
-```
+The final decision remains with the human reviewer.
 
-### Linux / macOS
+## Grounding and Safety
 
-```bash
-export GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
-```
+Gemini receives the deterministic findings and their supporting evidence.
 
-The API key must not be committed to the repository.
+The AI prompt instructs Gemini to:
 
-## Step 3: Start the Application
+- Use only the provided evidence.
+- Never invent clauses or facts.
+- Never change the deterministic finding.
+- Explain missing protections as missing.
+- Explain deviations using the lease evidence and company standard.
+- Avoid legal advice.
+- Escalate to the human reviewer when evidence is insufficient.
 
-Run:
+If Gemini is unavailable or its response cannot be safely interpreted, the deterministic Rule Engine remains available for human review.
 
-```bash
-python app.py
-```
+## Error Handling
 
-The application will be available at:
+The application handles:
 
-```text
-http://localhost:8000
-```
+- Empty lease text
+- Invalid JSON requests
+- Invalid PDF data
+- Oversized PDF files
+- PDFs without readable text
+- Missing Gemini API key
+- Gemini API failures
+- Gemini quota exhaustion
+- Invalid Gemini responses
 
-No separate frontend server or build command is required.
+## Limitations
 
----
+This is a hackathon prototype.
 
-# Demo Workflow
+It is not a replacement for legal counsel.
 
-## Clean Case
+The company standards used in the demonstration are example policy values and should be replaced with organization-specific policies before production use.
 
-Upload or load a lease agreement that follows the configured company standards.
+Scanned image-only PDFs currently require OCR support for reliable text extraction.
 
-The system should identify the relevant clauses as compliant and avoid unnecessary findings.
+## Future Improvements
 
----
+Potential improvements include:
 
-## Difficult Case
+- OCR for scanned agreements
+- More advanced clause extraction
+- Local vector retrieval using Gemini embeddings
+- More company policy categories
+- Clause-level confidence scoring
+- Reviewer feedback and audit history
+- Exportable review reports
+- Multi-document comparison
+- Version tracking for company standards
 
-Load the provided difficult lease demonstration.
 
-The difficult case contains examples such as:
+## Final Statement
 
-* Excessive security deposit
-* Rent increase above the configured limit
-* Notice period outside the configured range
-* Ambiguous maintenance responsibility
-* Missing deposit return timeline
-* Subletting without required written approval
-* Excessive late fee
-* Broad early termination rights
+LeaseGuard AI is designed around one principle:
 
-The system highlights these issues and provides evidence for each finding.
+The Rule Engine determines the finding.
 
----
+Gemini explains the finding.
 
-# Example Review Pipeline
-
-```text
-Upload Lease
-     |
-     v
-Extract Text
-     |
-     v
-Apply Company Standards
-     |
-     v
-Deterministic Rule Engine
-     |
-     +----------------------+
-     |          |           |
-     v          v           v
- Compliant   Deviation    Missing
-     |          |           |
-     +----------+-----------+
-                |
-                v
-        Evidence + Severity
-                |
-                v
-          Risk Indicator
-                |
-                v
-            Gemini AI
-                |
-                v
-       Reviewer Explanation
-                |
-                v
-         Human Decision
-```
-
----
-
-# Design Decisions
-
-## Why a Deterministic Rule Engine?
-
-Many lease-policy checks are based on explicit company positions and numerical thresholds.
-
-Examples include:
-
-* Deposit ranges
-* Notice periods
-* Rent increases
-* Late fee limits
-* Required protections
-
-These checks should be consistent and reproducible.
-
-Therefore, the Rule Engine performs the actual policy evaluation.
-
----
-
-## Why Gemini?
-
-Gemini is used for natural-language explanation rather than replacing deterministic policy logic.
-
-It helps the reviewer understand:
-
-* What the finding means
-* Why it matters
-* What should be verified
-
-This keeps the AI useful while limiting unsupported decisions.
-
----
-
-## Why Human Review?
-
-Lease agreements may contain ambiguous language and business-specific circumstances.
-
-The system therefore assists the reviewer instead of making the final legal or business decision.
-
----
-
-# Evidence and Grounding
-
-LeaseGuard AI follows an evidence-first approach.
-
-The Rule Engine generates findings from:
-
-1. Lease agreement evidence
-2. Configured company standards
-3. Deterministic evaluation rules
-
-Gemini receives the deterministic findings and supporting evidence to generate explanations.
-
-The AI explanation layer is instructed not to invent:
-
-* Clauses
-* Dates
-* Amounts
-* Numbers
-* Parties
-* Rights
-* Obligations
-* Contract facts
-
-If sufficient evidence is unavailable, the system should indicate that the evidence is insufficient rather than inventing information.
-
----
-
-# Error Handling
-
-The application handles common failures including:
-
-* Empty lease input
-* Invalid JSON requests
-* Invalid PDF data
-* Unsupported file types
-* Oversized PDF files
-* PDFs without readable text
-* Gemini API errors
-* Gemini quota exhaustion
-* Invalid Gemini JSON responses
-
-When Gemini is unavailable, the deterministic Rule Engine remains active so that the reviewer can still inspect the policy findings.
-
----
-
-# Limitations
-
-The current prototype focuses on a defined set of lease-policy checks.
-
-It is not a replacement for professional legal advice or legal review.
-
-Scanned or image-only PDFs without readable text may require OCR before analysis.
-
-The configured company standards are demonstration policies and should be replaced with organization-approved standards in a production environment.
-
-The severity-based risk indicator is an internal review-prioritization mechanism and should not be interpreted as a legal risk prediction.
-
----
-
-# Future Improvements
-
-Potential future improvements include:
-
-* OCR support for scanned lease documents
-* More configurable company policies
-* Clause-level document highlighting
-* Versioned company standards
-* Reviewer approval workflow
-* Audit history
-* Multi-company policy configurations
-* Advanced clause extraction
-* Local retrieval over larger policy libraries
-* Authentication and role-based access
-* Enterprise document management integration
-
----
-
-
-# Final Statement
-
-LeaseGuard AI is built around a simple evidence-first workflow:
-
-> **The Rule Engine determines the finding. Gemini explains it. The human reviewer decides.**
-
-LeaseGuard AI helps legal operations teams review lease agreements faster, more consistently, and with traceable evidence while keeping the final decision with a human reviewer.
-
-```
+The human reviewer makes the final decision.
