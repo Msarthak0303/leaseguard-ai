@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>LeaseGuard AI</title>
+
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header>
+            <h1>LeaseGuard AI</h1>
+            <p>Evidence-First Lease Agreement Review</p>
+        </header>
+
+        <main>
+
+            <section class="input-card">
+
+                <h2>Review Lease Agreement</h2>
+
+                <div class="buttons">
+                    <button id="loadDemo">
+                        Load Difficult Demo
+                    </button>
+
+                    <button id="clearText" class="secondary">
+                        Clear
+                    </button>
+                </div>
+
+                <textarea
+                    id="leaseText"
+                    placeholder="Paste your lease agreement here..."
+                ></textarea>
+
+                <button id="reviewButton" class="review-button">
+                    Review Agreement
+                </button>
+
+                <div id="loading" class="loading hidden">
+                    Reviewing agreement...
+                </div>
+
+            </section>
+
+
+            <section id="results" class="results hidden">
+
+                <div class="result-header">
+
+                    <div>
+                        <h2>Review Result</h2>
+
+                        <div id="overallStatus"
+                             class="status">
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="summary-grid">
+
+                    <div class="summary-card">
+                        <span id="compliantCount">0</span>
+                        <p>Compliant</p>
+                    </div>
+
+                    <div class="summary-card">
+                        <span id="deviationCount">0</span>
+                        <p>Deviations</p>
+                    </div>
+
+                    <div class="summary-card">
+                        <span id="missingCount">0</span>
+                        <p>Missing</p>
+                    </div>
+
+                    <div class="summary-card">
+                        <span id="totalCount">0</span>
+                        <p>Total Checks</p>
+                    </div>
+
+                </div>
+
+
+                <div class="findings-section">
+
+                    <h2>Clause Findings</h2>
+
+                    <div id="findings"></div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+        <footer>
+            <p>
+                LeaseGuard AI — Human review remains the final decision.
+            </p>
+        </footer>
+
+    </div>
+    <div class="upload-box">
+    <label for="leaseFile">
+        📄 Upload Lease Agreement (PDF)
+    </label>
+
+    <input
+        type="file"
+        id="leaseFile"
+        accept=".pdf"
+    />
+
+    <p id="fileName">No file selected</p>
+</div>
+
+    <script src="/app.js"></script>
+
+</body>
+</html>

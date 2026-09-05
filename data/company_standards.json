@@ -1,0 +1,43 @@
+{
+  "security_deposit": {
+    "min_months": 1,
+    "max_months": 3,
+    "required": true
+  },
+  "notice_period": {
+    "min_days": 30,
+    "max_days": 60,
+    "required": true
+  },
+  "deposit_return": {
+    "max_days": 30,
+    "required": true
+  },
+  "rent_increase": {
+    "max_percent": 5,
+    "required": true
+  },
+  "maintenance": {
+    "required": true
+  },
+  "subletting": {
+    "written_approval_required": true,
+    "required": true
+  },
+  "late_fee": {
+    "max_percent": 5,
+    "required": true
+  },
+  "early_termination": {
+    "required": true
+  },
+  "landlord_identification": {
+    "required": true
+  },
+  "tenant_identification": {
+    "required": true
+  },
+  "lease_duration": {
+    "required": true
+  }
+}
